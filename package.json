@@ -66,6 +66,6 @@
     "dev": "vite",
     "build": "vite build",
     "predeploy": "vite build",
-    "deploy": "gh-pages -d dist -b gh-pages -m 'Deploy to gh-pages'"
+    "deploy": "gh-pages -d dist"
   }
 }
