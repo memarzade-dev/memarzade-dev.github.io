@@ -414,7 +414,7 @@ export function ProjectDetail() {
       </div>
 
       <ShareButtons
-        url={`https://vaults.memarzade.dev/projects/${slug}`}
+        url={`https://vaults.memarzade.dev/#/projects/${slug}`}
         title={project.title}
         description={project.description}
       />

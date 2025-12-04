@@ -513,7 +513,7 @@ export function BlogPost() {
       {post && <TableOfContents content={post.content} />}
 
       <ShareButtons
-        url={`https://vaults.memarzade.dev/blog/${slug}`}
+        url={`https://vaults.memarzade.dev/#/blog/${slug}`}
         title={post.title}
         description={post.description}
       />
