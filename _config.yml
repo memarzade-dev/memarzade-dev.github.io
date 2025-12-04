@@ -1,0 +1,41 @@
+title: My Obsidian Vault Blog
+description: A sleek, professional digital garden for sharing Markdown notes, insights, and stories. Powered by Obsidian and Jekyll for seamless knowledge sharing.
+url: "https://vaults.memarzade.dev"
+baseurl: ""
+theme: minima  # Base theme; override with custom layouts and CSS for dark mode professionalism
+permalink: /:title/  # Pretty URLs for blog posts
+plugins:
+  - jekyll-feed  # Enables RSS feed for subscribers
+  - jekyll-seo-tag  # Automatic SEO tags for better search visibility
+  - jekyll-sitemap  # Generates sitemap.xml for search engines
+  - jekyll-paginate  # Pagination for archive pages if needed
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      author: "Your Name"  # Replace with your name for bylines
+      comments: true  # If you add Disqus or similar for comments
+
+paginate: 10  # Number of posts per page in archive
+paginate_path: /archive/page:num/
+
+social:
+  twitter: yourtwitterhandle  # Add your social links here
+  github: yourgithubusername
+  linkedin: yourlinkedinprofile
+
+analytics:
+  google: UA-XXXXX-X  # Add Google Analytics ID if you have one
+
+header_pages:
+  - about.md
+  - archive.md
+  - contact.md  # If you add a contact page
+
+markdown: kramdown
+kramdown:
+  input: GFM  # GitHub Flavored Markdown for Obsidian compatibility
+  syntax_highlighter: rouge  # Code highlighting for professional look
