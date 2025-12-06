@@ -1,14 +1,17 @@
+import { Calendar, Tag, ArrowLeft, Clock } from 'lucide-react';
+import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'motion/react';
-import { Calendar, Clock, Tag, ArrowLeft, Share2, Bookmark } from 'lucide-react';
-import { MarkdownRenderer } from '../components/MarkdownRenderer';
-import { ShareButtons } from '../components/ShareButtons';
-import { SEO } from '../components/SEO';
-import { LoadingSpinner } from '../components/LoadingSpinner';
+
 import { ErrorMessage } from '../components/ErrorMessage';
-import { ViewCounter } from '../components/ViewCounter';
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { MarkdownRenderer } from '../components/MarkdownRenderer';
+import { SEO } from '../components/SEO';
+import { ShareButtons } from '../components/ShareButtons';
 import { TableOfContents } from '../components/TableOfContents';
+import { parseFrontMatter } from '@/utils/frontMatter';
+
+const files = import.meta.glob('../data/posts/*.md', { query: '?raw', import: 'default', eager: true });
 
 interface BlogPostData {
   title: string;
@@ -24,7 +27,7 @@ interface BlogPostData {
 }
 
 // Sample blog posts data - In a real app, this would come from an API or CMS
-const blogPosts: Record<string, BlogPostData> = {
+const _blogPosts: Record<string, BlogPostData> = {
   'laravel-scalable-apps': {
     title: 'Building Scalable Web Applications with Laravel',
     description: 'Exploring best practices for creating maintainable and scalable Laravel applications with modern architecture patterns.',
@@ -435,10 +438,10 @@ AI-powered code generation is a powerful tool that can significantly boost produ
 export function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const [post, setPost] = useState<BlogPostData | null>(null);
+  const [content, setContent] = useState<string | null>(null);
+  const [meta, setMeta] = useState<{ title?: string; description?: string; date?: string; tags?: string[]; readTime?: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isBookmarked, setIsBookmarked] = useState(false);
 
   useEffect(() => {
     // Simulate API call
@@ -447,12 +450,33 @@ export function BlogPost() {
       setError(null);
 
       try {
-        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate delay
-
-        if (slug && blogPosts[slug]) {
-          setPost(blogPosts[slug]);
-        } else {
+        await new Promise(resolve => setTimeout(resolve, 200));
+        if (!slug) {
           setError('Blog post not found');
+        } else {
+          const entry = Object.entries(files).find(([path]) => {
+            const name = path.split('/').pop()!.replace('.md', '');
+            return name === slug;
+          });
+          if (entry) {
+            const raw = entry[1] as string;
+            const { data, body } = parseFrontMatter(raw);
+            setContent(body);
+            const titleMatch = body.match(/^#\s+(.+)$/m);
+            const description = body.split('\n').find((l) => l.trim() && !l.startsWith('#')) || '';
+            const tags = (data.tags || '').split(',').map((t) => t.trim()).filter(Boolean);
+            const words = body.split(/\s+/).length;
+            const readTime = Math.max(1, Math.round(words / 200));
+            setMeta({
+              title: data.title || (titleMatch ? titleMatch[1] : slug),
+              description: data.description || description,
+              date: data.date,
+              tags,
+              readTime,
+            });
+          } else {
+            setError('Blog post not found');
+          }
         }
       } catch (err) {
         setError('Failed to load blog post');
@@ -465,16 +489,12 @@ export function BlogPost() {
     window.scrollTo(0, 0);
   }, [slug]);
 
-  const handleBookmark = () => {
-    setIsBookmarked(!isBookmarked);
-    // In a real app, save to local storage or backend
-  };
 
   if (loading) {
     return <LoadingSpinner fullScreen />;
   }
 
-  if (error || !post) {
+  if (error || !content) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <ErrorMessage
@@ -489,9 +509,10 @@ export function BlogPost() {
   return (
     <>
       <SEO
-        title={`${post.title} | Memarzade.Dev`}
-        description={post.description}
+        title={`${meta?.title || 'Blog'} | Memarzade.Dev`}
+        description={meta?.description || ''}
         type="article"
+        url={typeof window !== 'undefined' ? window.location.href : undefined}
       />
 
       <article className="py-12 bg-[rgb(var(--color-bg-base))]">
@@ -510,12 +531,31 @@ export function BlogPost() {
       </article>
 
       {/* Table of Contents */}
-      {post && <TableOfContents content={post.content} />}
+      {content && <TableOfContents content={content} />}
+
+      <article className="py-8 bg-[rgb(var(--color-bg-base))]">
+        <div className="container mx-auto px-4 max-w-4xl">
+          {meta?.date || meta?.tags || meta?.readTime ? (
+            <div className="mb-6 flex flex-wrap gap-4 text-[rgb(var(--color-text-muted))]">
+              {meta?.date && (
+                <span className="inline-flex items-center gap-2"><Calendar className="w-4 h-4" />{new Date(meta.date).toLocaleDateString()}</span>
+              )}
+              {meta?.tags && meta.tags.length > 0 && (
+                <span className="inline-flex items-center gap-2"><Tag className="w-4 h-4" />{meta.tags.join(', ')}</span>
+              )}
+              {typeof meta?.readTime === 'number' && (
+                <span className="inline-flex items-center gap-2"><Clock className="w-4 h-4" />{meta.readTime} min read</span>
+              )}
+            </div>
+          ) : null}
+          {content && <MarkdownRenderer content={content} />}
+        </div>
+      </article>
 
       <ShareButtons
-        url={`https://vaults.memarzade.dev/#/blog/${slug}`}
-        title={post.title}
-        description={post.description}
+        url={typeof window !== 'undefined' ? window.location.href : `https://memarzade-dev.memarzade-dev.workers.dev/blog/${slug}`}
+        title={meta?.title || 'Memarzade.Dev - Blog'}
+        description={meta?.description || `Article: ${slug}`}
       />
     </>
   );

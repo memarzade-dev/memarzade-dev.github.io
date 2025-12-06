@@ -1,83 +1,35 @@
-import { useState } from 'react';
-import { motion } from 'motion/react';
 import { Search, Filter, Calendar, Clock } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useState } from 'react';
+
 import { PostCard } from '../components/PostCard';
 import { SEO } from '../components/SEO';
+import { parseFrontMatter } from '@/utils/frontMatter';
 
-const allPosts = [
-  {
-    title: 'Building Scalable Web Applications with Laravel',
-    description: 'Exploring best practices for creating maintainable and scalable Laravel applications with modern architecture patterns.',
-    date: '2024-12-01',
-    readTime: 8,
-    tags: ['Laravel', 'PHP', 'Architecture'],
-    slug: 'laravel-scalable-apps',
-  },
-  {
-    title: 'AI-Powered Development: Using LLMs for Code Generation',
-    description: 'How Large Language Models are transforming the way we write code and boost developer productivity.',
-    date: '2024-11-28',
-    readTime: 12,
-    tags: ['AI', 'Python', 'LLM'],
-    slug: 'ai-code-generation',
-  },
-  {
-    title: 'Understanding Blockchain Fundamentals',
-    description: 'A comprehensive guide to blockchain technology, smart contracts, and decentralized applications.',
-    date: '2024-11-25',
-    readTime: 15,
-    tags: ['Blockchain', 'Web3', 'Smart Contracts'],
-    slug: 'blockchain-fundamentals',
-  },
-  {
-    title: 'Modern React Patterns and Best Practices',
-    description: 'Dive deep into React hooks, context, and composition patterns for building robust applications.',
-    date: '2024-11-20',
-    readTime: 10,
-    tags: ['React', 'TypeScript', 'Frontend'],
-    slug: 'modern-react-patterns',
-  },
-  {
-    title: 'Mastering Project Management in Tech',
-    description: 'Essential strategies and tools for managing software development projects effectively.',
-    date: '2024-11-15',
-    readTime: 7,
-    tags: ['Project Management', 'Agile', 'Leadership'],
-    slug: 'project-management-tech',
-  },
-  {
-    title: 'Python for Data Science and Machine Learning',
-    description: 'An introduction to using Python libraries like NumPy, Pandas, and TensorFlow for ML projects.',
-    date: '2024-11-10',
-    readTime: 14,
-    tags: ['Python', 'ML', 'Data Science'],
-    slug: 'python-data-science',
-  },
-  {
-    title: 'Building RESTful APIs with Node.js and Express',
-    description: 'Learn how to create robust, scalable APIs using Node.js, Express, and best practices.',
-    date: '2024-11-05',
-    readTime: 9,
-    tags: ['Node.js', 'Express', 'API'],
-    slug: 'nodejs-rest-api',
-  },
-  {
-    title: 'Docker for Developers: A Practical Guide',
-    description: 'Master containerization with Docker for consistent development and deployment workflows.',
-    date: '2024-10-30',
-    readTime: 11,
-    tags: ['Docker', 'DevOps', 'Containers'],
-    slug: 'docker-practical-guide',
-  },
-  {
-    title: 'TypeScript Advanced Types and Patterns',
-    description: 'Explore advanced TypeScript features including generics, utility types, and type guards.',
-    date: '2024-10-25',
-    readTime: 13,
-    tags: ['TypeScript', 'JavaScript', 'Types'],
-    slug: 'typescript-advanced',
-  },
-];
+const files = import.meta.glob('../data/posts/*.md', { query: '?raw', import: 'default', eager: true });
+
+const allPosts = Object.entries(files).map(([path, raw]) => {
+  const slug = path.split('/').pop()!.replace('.md', '');
+  const text = String(raw);
+  const { data, body } = parseFrontMatter(text);
+  const titleLine = (data.title || (body.match(/^#\s+(.+)$/m) || [])[1]) || slug;
+  const firstParaMatch = body.split('\n').find((l) => l.trim() && !l.startsWith('#')) || '';
+  const words = body.split(/\s+/).length;
+  const readTime = Math.max(1, Math.round(words / 200));
+  return {
+    title: titleLine,
+    description: (data.description || firstParaMatch).slice(0, 180),
+    date: data.date || new Date().toISOString().slice(0, 10),
+    readTime,
+    tags: Array.isArray((data as any).tags)
+      ? ((data as any).tags as string[])
+      : String((data as any).tags || '')
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean),
+    slug,
+  };
+});
 
 const allTags = Array.from(new Set(allPosts.flatMap(post => post.tags)));
 

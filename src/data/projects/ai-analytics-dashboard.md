@@ -1,3 +1,13 @@
+---
+title: AI Analytics Dashboard - Real-Time Business Intelligence
+description: An enterprise-grade analytics dashboard powered by artificial intelligence, providing real-time insights, predictive analytics, and automated reporting for data-driven decision making.
+date: 2024-09-15
+tags: React, TypeScript, D3.js, FastAPI, TensorFlow
+image: https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYXRhJTIwZGFzaGJvYXJkfGVufDF8fHx8MTc2NDgzMjk5OHww&ixlib=rb-4.1.0&q=80&w=1080
+demoUrl: https://example.com/demo
+githubUrl: https://github.com/memarzade-dev
+---
+
 # AI Analytics Dashboard - Real-Time Business Intelligence
 
 An enterprise-grade analytics dashboard powered by artificial intelligence, providing real-time insights, predictive analytics, and automated reporting for data-driven decision making.

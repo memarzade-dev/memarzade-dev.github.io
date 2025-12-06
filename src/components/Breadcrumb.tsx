@@ -1,5 +1,5 @@
-import { motion } from 'motion/react';
 import { ChevronRight, Home } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface BreadcrumbItem {
   label: string;

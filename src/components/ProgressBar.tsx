@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import { motion, useScroll, useSpring } from 'motion/react';
+import { useEffect, useState } from 'react';
 
 interface ProgressBarProps {
   estimatedReadTime?: number;

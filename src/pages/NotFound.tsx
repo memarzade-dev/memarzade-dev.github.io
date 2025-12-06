@@ -1,6 +1,7 @@
+import { Home, ArrowLeft, Search } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-import { Home, ArrowLeft, Search } from 'lucide-react';
+
 import { SEO } from '../components/SEO';
 
 export function NotFound() {

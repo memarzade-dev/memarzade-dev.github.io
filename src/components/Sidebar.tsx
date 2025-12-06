@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight, Folder, FileText } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
 
 interface CategoryNode {

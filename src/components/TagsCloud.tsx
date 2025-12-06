@@ -1,5 +1,5 @@
-import { motion } from 'motion/react';
 import { Tag } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface TagData {
   name: string;

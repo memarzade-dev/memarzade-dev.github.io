@@ -1,6 +1,7 @@
-import { motion } from 'motion/react';
 import { Type, Minus, Plus, AlignLeft } from 'lucide-react';
+import { motion } from 'motion/react';
 import { useState, useEffect } from 'react';
+
 import { Tooltip } from './Tooltip';
 
 interface ReadingModeSettings {

@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { Search, X, FileText, Tag, Calendar, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { parseFrontMatter } from '@/utils/frontMatter';
+import { useState, useEffect, useCallback } from 'react';
 
 interface SearchResult {
   type: 'post' | 'project' | 'tag';
@@ -16,39 +17,51 @@ interface SearchModalProps {
   onClose: () => void;
 }
 
-// Mock search data - in a real app, this would come from an API or search index
-const mockSearchData: SearchResult[] = [
-  {
+const postFiles = import.meta.glob('../data/posts/*.md', { query: '?raw', import: 'default', eager: true });
+const projectFiles = import.meta.glob('../data/projects/*.md', { query: '?raw', import: 'default', eager: true });
+
+
+const indexPosts: SearchResult[] = Object.entries(postFiles).map(([path, raw]) => {
+  const slug = path.split('/').pop()!.replace('.md', '');
+  const text = String(raw);
+  const { data, body } = parseFrontMatter(text);
+  const title = data.title || ((body.match(/^#\s+(.+)$/m) || [])[1] ?? slug);
+  const description = data.description || body.split('\n').find((l) => l.trim() && !l.startsWith('#')) || '';
+  const rawTags = (data as any).tags;
+  const tags = Array.isArray(rawTags)
+    ? rawTags
+    : String(rawTags || '').split(',').map((t) => t.trim()).filter(Boolean);
+  return {
     type: 'post',
-    title: 'Building Scalable Web Applications with Laravel',
-    description: 'Exploring best practices for creating maintainable and scalable Laravel applications...',
-    url: '/blog/laravel-scalable-apps',
-    tags: ['Laravel', 'PHP', 'Architecture'],
-    date: '2024-12-01',
-  },
-  {
-    type: 'post',
-    title: 'AI-Powered Development: Using LLMs for Code Generation',
-    description: 'How Large Language Models are transforming the way we write code...',
-    url: '/blog/ai-code-generation',
-    tags: ['AI', 'Python', 'LLM'],
-    date: '2024-11-28',
-  },
-  {
+    title,
+    description,
+    url: `/blog/${slug}`,
+    tags,
+    date: data.date,
+  };
+});
+
+const indexProjects: SearchResult[] = Object.entries(projectFiles).map(([path, raw]) => {
+  const slug = path.split('/').pop()!.replace('.md', '');
+  const text = String(raw);
+  const { data, body } = parseFrontMatter(text);
+  const title = data.title || ((body.match(/^#\s+(.+)$/m) || [])[1] ?? slug);
+  const description = data.description || body.split('\n').find((l) => l.trim() && !l.startsWith('#')) || '';
+  const rawTags2 = (data as any).tags;
+  const tags = Array.isArray(rawTags2)
+    ? rawTags2
+    : String(rawTags2 || '').split(',').map((t) => t.trim()).filter(Boolean);
+  return {
     type: 'project',
-    title: 'E-Commerce Platform',
-    description: 'Full-stack e-commerce solution with React, Node.js, and Stripe integration',
-    url: '/projects/ecommerce-platform',
-    tags: ['React', 'Node.js', 'Stripe'],
-  },
-  {
-    type: 'project',
-    title: 'AI Chat Assistant',
-    description: 'Intelligent chatbot powered by GPT-4 for customer support',
-    url: '/projects/ai-chat-assistant',
-    tags: ['Python', 'AI', 'OpenAI'],
-  },
-];
+    title,
+    description,
+    url: `/projects/${slug}`,
+    tags,
+    date: data.date,
+  };
+});
+
+const searchIndex: SearchResult[] = [...indexPosts, ...indexProjects];
 
 export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [query, setQuery] = useState('');
@@ -63,7 +76,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
     }
 
     const lowercaseQuery = searchQuery.toLowerCase();
-    const filtered = mockSearchData.filter(
+    const filtered = searchIndex.filter(
       (item) =>
         item.title.toLowerCase().includes(lowercaseQuery) ||
         item.description?.toLowerCase().includes(lowercaseQuery) ||

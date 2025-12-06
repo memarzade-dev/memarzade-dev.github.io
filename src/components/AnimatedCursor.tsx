@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
+import { useEffect, useState } from 'react';
 
 export function AnimatedCursor() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });

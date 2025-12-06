@@ -1,91 +1,30 @@
-import { useState } from 'react';
-import { motion } from 'motion/react';
 import { Search, Filter } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useState } from 'react';
+
 import { ProjectCard } from '../components/ProjectCard';
 import { SEO } from '../components/SEO';
+import { parseFrontMatter } from '@/utils/frontMatter';
 
-const allProjects = [
-  {
-    title: 'E-Commerce Platform',
-    description: 'A full-stack e-commerce solution built with React, Node.js, and Stripe. Features include real-time inventory, payment processing, and admin dashboard.',
-    image: 'https://images.unsplash.com/photo-1727407209320-1fa6ae60ee05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlY29tbWVyY2UlMjBzaG9wcGluZ3xlbnwxfHx8fDE3NjQ4NTk3ODh8MA&ixlib=rb-4.1.0&q=80&w=1080',
-    tags: ['React', 'Node.js', 'Stripe', 'MongoDB'],
-    demoUrl: 'https://example.com/demo',
-    githubUrl: 'https://github.com/memarzade-dev',
-    date: '2024-11-01',
-    slug: 'ecommerce-platform',
-  },
-  {
-    title: 'AI Chat Assistant',
-    description: 'Intelligent chatbot powered by GPT-4 API for customer support. Includes sentiment analysis, multi-language support, and conversation history.',
-    image: 'https://images.unsplash.com/photo-1697577418970-95d99b5a55cf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhcnRpZmljaWFsJTIwaW50ZWxsaWdlbmNlfGVufDF8fHx8MTc2NDgzNzU4MHww&ixlib=rb-4.1.0&q=80&w=1080',
-    tags: ['Python', 'OpenAI', 'FastAPI', 'Redis'],
-    demoUrl: 'https://example.com/demo',
-    githubUrl: 'https://github.com/memarzade-dev',
-    date: '2024-10-15',
-    slug: 'ai-chat-assistant',
-  },
-  {
-    title: 'Blockchain DApp',
-    description: 'Decentralized application for NFT marketplace with smart contracts on Ethereum. Features wallet integration and gas optimization.',
-    image: 'https://images.unsplash.com/photo-1666816943035-15c29931e975?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibG9ja2NoYWluJTIwdGVjaG5vbG9neXxlbnwxfHx8fDE3NjQ4NTYwMjJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
-    tags: ['Solidity', 'Web3.js', 'React', 'IPFS'],
-    demoUrl: 'https://example.com/demo',
-    githubUrl: 'https://github.com/memarzade-dev',
-    date: '2024-09-20',
-  },
-  {
-    title: 'Analytics Dashboard',
-    description: 'Real-time analytics platform with interactive visualizations. Built for monitoring business metrics and KPIs with customizable widgets.',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYXRhJTIwZGFzaGJvYXJkfGVufDF8fHx8MTc2NDgzMjk5OHww&ixlib=rb-4.1.0&q=80&w=1080',
-    tags: ['React', 'D3.js', 'TypeScript', 'PostgreSQL'],
-    demoUrl: 'https://example.com/demo',
-    githubUrl: 'https://github.com/memarzade-dev',
-    date: '2024-08-10',
-  },
-  {
-    title: 'Mobile Fitness App',
-    description: 'Cross-platform fitness tracking app with workout plans, nutrition tracking, and social features. Built with React Native.',
-    image: 'https://images.unsplash.com/photo-1605108222700-0d605d9ebafe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2JpbGUlMjBhcHAlMjBpbnRlcmZhY2V8ZW58MXx8fHwxNzY0ODU3OTQ5fDA&ixlib=rb-4.1.0&q=80&w=1080',
-    tags: ['React Native', 'Firebase', 'Redux', 'Node.js'],
-    demoUrl: 'https://example.com/demo',
-    date: '2024-07-05',
-  },
-  {
-    title: 'SaaS Web Builder',
-    description: 'Drag-and-drop website builder with custom component library. Includes hosting, domain management, and SEO tools.',
-    image: 'https://images.unsplash.com/photo-1677214467820-ab069619bbb6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB3ZWIlMjBkZXNpZ258ZW58MXx8fHwxNzY0ODA3NTgxfDA&ixlib=rb-4.1.0&q=80&w=1080',
-    tags: ['React', 'Laravel', 'AWS', 'Docker'],
-    demoUrl: 'https://example.com/demo',
-    githubUrl: 'https://github.com/memarzade-dev',
-    date: '2024-06-12',
-  },
-  {
-    title: 'Task Management System',
-    description: 'Collaborative project management tool with kanban boards, time tracking, and team collaboration features.',
-    image: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0YXNrJTIwbWFuYWdlbWVudHxlbnwxfHx8fDE3NjQ4NTk3ODh8MA&ixlib=rb-4.1.0&q=80&w=1080',
-    tags: ['Vue.js', 'Node.js', 'Socket.io', 'MongoDB'],
-    demoUrl: 'https://example.com/demo',
-    date: '2024-05-20',
-  },
-  {
-    title: 'Weather Forecast App',
-    description: 'Beautiful weather application with detailed forecasts, interactive maps, and weather alerts. Supports multiple locations.',
-    image: 'https://images.unsplash.com/photo-1592210454359-9043f067919b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3ZWF0aGVyJTIwZm9yZWNhc3R8ZW58MXx8fHwxNzY0ODU5Nzg4fDA&ixlib=rb-4.1.0&q=80&w=1080',
-    tags: ['React', 'TypeScript', 'OpenWeather API', 'Mapbox'],
-    demoUrl: 'https://example.com/demo',
-    githubUrl: 'https://github.com/memarzade-dev',
-    date: '2024-04-15',
-  },
-  {
-    title: 'Social Media Dashboard',
-    description: 'Unified dashboard for managing multiple social media accounts. Schedule posts, track analytics, and engage with audience.',
-    image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb2NpYWwlMjBtZWRpYXxlbnwxfHx8fDE3NjQ4NTk3ODh8MA&ixlib=rb-4.1.0&q=80&w=1080',
-    tags: ['React', 'Python', 'Twitter API', 'Facebook Graph'],
-    demoUrl: 'https://example.com/demo',
-    date: '2024-03-10',
-  },
-];
+const files = import.meta.glob('../data/projects/*.md', { query: '?raw', import: 'default', eager: true });
+
+const allProjects = Object.entries(files).map(([path, raw]) => {
+  const slug = path.split('/').pop()!.replace('.md', '');
+  const text = String(raw);
+  const { data, body } = parseFrontMatter(text);
+  const title = data.title || ((body.match(/^#\s+(.+)$/m) || [])[1] ?? slug);
+  const description = data.description || body.split('\n').find((l) => l.trim() && !l.startsWith('#')) || '';
+  return {
+    title,
+    description,
+    image: data.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+    tags: (data.tags || '').split(',').map((t) => t.trim()).filter(Boolean),
+    demoUrl: data.demoUrl,
+    githubUrl: data.githubUrl,
+    date: data.date || new Date().toISOString().slice(0, 10),
+    slug,
+  };
+});
 
 const allTags = Array.from(new Set(allProjects.flatMap(project => project.tags)));
 

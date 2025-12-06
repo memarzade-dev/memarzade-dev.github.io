@@ -1,7 +1,9 @@
-import { motion } from 'motion/react';
 import { ExternalLink, Github, Calendar, Tag } from 'lucide-react';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
+
+import { ImageWithFallback } from './figma/ImageWithFallback';
+
 
 interface ProjectCardProps {
   title: string;

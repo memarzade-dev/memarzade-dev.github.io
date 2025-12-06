@@ -1,5 +1,5 @@
-import { motion } from 'motion/react';
 import { Briefcase, GraduationCap, Award, Calendar } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface TimelineItem {
   type: 'work' | 'education' | 'achievement';

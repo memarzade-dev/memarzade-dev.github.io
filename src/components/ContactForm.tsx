@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { motion } from 'motion/react';
 import { Send, Mail, User, MessageSquare, CheckCircle, AlertCircle } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useState } from 'react';
 
 interface FormData {
   name: string;

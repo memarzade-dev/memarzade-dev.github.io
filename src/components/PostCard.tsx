@@ -1,7 +1,9 @@
-import { motion } from 'motion/react';
 import { Calendar, Clock, Tag, ArrowRight } from 'lucide-react';
-import { Typography } from './Typography';
+import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
+
+import { Typography } from './Typography';
+
 
 interface PostCardProps {
   title: string;

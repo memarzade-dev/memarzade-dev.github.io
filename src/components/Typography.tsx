@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, useRef } from 'react';
+
 import { detectDirection } from '../utils/rtlDetect';
 
 interface TypographyProps {

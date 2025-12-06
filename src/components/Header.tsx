@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'motion/react';
 import { Moon, Sun, Search, Menu, X } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'motion/react';
+import { useState, useEffect } from 'react';
+
 import { Button } from './Button';
 
 interface HeaderProps {

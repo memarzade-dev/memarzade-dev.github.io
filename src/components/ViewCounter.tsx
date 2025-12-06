@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
 import { Eye } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useEffect, useState } from 'react';
 
 interface ViewCounterProps {
   slug: string;

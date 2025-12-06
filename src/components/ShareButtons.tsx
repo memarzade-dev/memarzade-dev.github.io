@@ -1,6 +1,7 @@
-import { motion } from 'motion/react';
 import { Share2, Twitter, Linkedin, Facebook, Link, Check } from 'lucide-react';
+import { motion } from 'motion/react';
 import { useState } from 'react';
+
 import { Tooltip } from './Tooltip';
 
 interface ShareButtonsProps {

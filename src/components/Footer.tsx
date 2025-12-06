@@ -1,5 +1,5 @@
-import { motion } from 'motion/react';
 import { Github, Linkedin, Twitter, Mail, Heart } from 'lucide-react';
+import { motion } from 'motion/react';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -27,13 +27,19 @@ export function Footer() {
           <div className="space-y-4">
             <h4 className="font-semibold">Quick Links</h4>
             <ul className="space-y-2 text-sm">
-              {['Home', 'About', 'Projects', 'Blog', 'Contact'].map((item) => (
-                <li key={item}>
+              {[
+                { label: 'Home', href: '/' },
+                { label: 'About', href: '/about' },
+                { label: 'Projects', href: '/projects' },
+                { label: 'Blog', href: '/blog' },
+                { label: 'Contact', href: '/contact' },
+              ].map((link) => (
+                <li key={link.label}>
                   <a
-                    href={`#${item.toLowerCase()}`}
+                    href={link.href}
                     className="text-[rgb(var(--color-text-muted))] hover:text-[rgb(var(--color-primary))] transition-colors"
                   >
-                    {item}
+                    {link.label}
                   </a>
                 </li>
               ))}

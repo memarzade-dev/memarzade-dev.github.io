@@ -1,6 +1,7 @@
-import { motion } from 'motion/react';
-import { Button } from './Button';
 import { AlertCircle } from 'lucide-react';
+import { motion } from 'motion/react';
+
+import { Button } from './Button';
 
 interface ErrorMessageProps {
   message?: string;

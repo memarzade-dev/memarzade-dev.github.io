@@ -1,34 +1,35 @@
+import { Calendar, Tag, ArrowLeft, ExternalLink, Github, CheckCircle } from 'lucide-react';
+import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'motion/react';
-import { Calendar, Tag, ArrowLeft, ExternalLink, Github, CheckCircle } from 'lucide-react';
-import { MarkdownRenderer } from '../components/MarkdownRenderer';
-import { ShareButtons } from '../components/ShareButtons';
-import { SEO } from '../components/SEO';
-import { LoadingSpinner } from '../components/LoadingSpinner';
+
 import { ErrorMessage } from '../components/ErrorMessage';
-import { ViewCounter } from '../components/ViewCounter';
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { MarkdownRenderer } from '../components/MarkdownRenderer';
+import { SEO } from '../components/SEO';
+import { ShareButtons } from '../components/ShareButtons';
 import { TableOfContents } from '../components/TableOfContents';
+import { parseFrontMatter } from '@/utils/frontMatter';
 
 interface ProjectDetailData {
   title: string;
   description: string;
-  image: string;
+  date: string;
   tags: string[];
+  image?: string;
   demoUrl?: string;
   githubUrl?: string;
-  date: string;
-  longDescription: string;
-  challenges: string[];
-  solutions: string[];
-  technologies: { name: string; purpose: string }[];
-  features: string[];
-  outcomes: { label: string; value: string }[];
+  content?: string;
+  longDescription?: string;
+  challenges?: string[];
+  solutions?: string[];
+  technologies?: { name: string; purpose: string }[];
+  features?: string[];
+  outcomes?: { label: string; value: string }[];
   gallery?: string[];
 }
 
-// Sample project data
-const projects: Record<string, ProjectDetailData> = {
+const fallbackProjects: Record<string, ProjectDetailData> = {
   'ecommerce-platform': {
     title: 'E-Commerce Platform',
     description: 'A full-stack e-commerce solution built with React, Node.js, and Stripe.',
@@ -132,6 +133,7 @@ const projects: Record<string, ProjectDetailData> = {
   },
 };
 
+
 export function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -145,14 +147,46 @@ export function ProjectDetail() {
       setError(null);
 
       try {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        const files = import.meta.glob('@/data/projects/*.md', { query: '?raw', import: 'default', eager: true });
+        let found: ProjectDetailData | null = null;
 
-        if (slug && projects[slug]) {
-          setProject(projects[slug]);
+        if (slug) {
+          for (const [path, raw] of Object.entries(files)) {
+            const s = path.split('/').pop()?.replace('.md', '');
+            if (s === slug) {
+              const text = String(raw);
+              const { data, body } = parseFrontMatter(text);
+              const tags = (data.tags || '')
+                .split(',')
+                .map((t) => t.trim())
+                .filter(Boolean);
+              const title = data.title || (body.match(/^#\s+(.+)$/m) || [])[1] || slug;
+              const description = data.description || body.split('\n').find((l) => l.trim() && !l.startsWith('#')) || '';
+              found = {
+                title,
+                description,
+                date: data.date || new Date().toISOString(),
+                tags,
+                image: data.image,
+                demoUrl: data.demoUrl,
+                githubUrl: data.githubUrl,
+                content: body,
+              };
+              break;
+            }
+          }
+        }
+
+        if (!found && slug && fallbackProjects[slug]) {
+          found = fallbackProjects[slug];
+        }
+
+        if (found) {
+          setProject(found);
         } else {
           setError('Project not found');
         }
-      } catch (err) {
+      } catch {
         setError('Failed to load project');
       } finally {
         setLoading(false);
@@ -199,19 +233,20 @@ export function ProjectDetail() {
             Back to Projects
           </motion.button>
 
-          {/* Hero Image */}
-          <motion.div
-            className="relative h-[400px] rounded-2xl overflow-hidden mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <img
-              src={project.image}
-              alt={project.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          </motion.div>
+          {project.image && (
+            <motion.div
+              className="relative h-[400px] rounded-2xl overflow-hidden mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <img
+                src={project.image}
+                alt={project.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            </motion.div>
+          )}
 
           {/* Header */}
           <motion.div
@@ -277,18 +312,33 @@ export function ProjectDetail() {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-12">
               {/* Overview */}
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <h2 className="mb-4">Overview</h2>
-                <p className="text-[rgb(var(--color-text-muted))] leading-relaxed">
-                  {project.longDescription}
-                </p>
-              </motion.section>
+              {project.content ? (
+                <motion.section
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  {/* Table of Contents for project content */}
+                  <div className="mb-6">
+                    <TableOfContents content={project.content} />
+                  </div>
+                  <MarkdownRenderer content={project.content} />
+                </motion.section>
+              ) : (
+                <motion.section
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <h2 className="mb-4">Overview</h2>
+                  <p className="text-[rgb(var(--color-text-muted))] leading-relaxed">
+                    {project.longDescription || project.description}
+                  </p>
+                </motion.section>
+              )}
 
               {/* Challenges & Solutions */}
+              {project.challenges && project.challenges.length > 0 && project.solutions && project.solutions.length > 0 && (
               <motion.section
                 className="grid md:grid-cols-2 gap-8"
                 initial={{ opacity: 0, y: 20 }}
@@ -318,8 +368,10 @@ export function ProjectDetail() {
                   </ul>
                 </div>
               </motion.section>
+              )}
 
               {/* Features */}
+              {project.features && project.features.length > 0 && (
               <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -338,6 +390,7 @@ export function ProjectDetail() {
                   ))}
                 </div>
               </motion.section>
+              )}
 
               {/* Gallery */}
               {project.gallery && project.gallery.length > 0 && (
@@ -368,45 +421,47 @@ export function ProjectDetail() {
 
             {/* Sidebar */}
             <div className="space-y-8">
-              {/* Technologies */}
               <motion.div
                 className="sticky top-24"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <div className="bg-[rgb(var(--color-bg-subtle))] rounded-xl p-6">
-                  <h3 className="mb-4">Technologies</h3>
-                  <div className="space-y-4">
-                    {project.technologies.map((tech, index) => (
-                      <div key={index}>
-                        <h4 className="font-semibold text-[rgb(var(--color-text-base))] mb-1">
-                          {tech.name}
-                        </h4>
-                        <p className="text-sm text-[rgb(var(--color-text-muted))]">
-                          {tech.purpose}
-                        </p>
-                      </div>
-                    ))}
+                {project.technologies && project.technologies.length > 0 && (
+                  <div className="bg-[rgb(var(--color-bg-subtle))] rounded-xl p-6">
+                    <h3 className="mb-4">Technologies</h3>
+                    <div className="space-y-4">
+                      {project.technologies.map((tech, index) => (
+                        <div key={index}>
+                          <h4 className="font-semibold text-[rgb(var(--color-text-base))] mb-1">
+                            {tech.name}
+                          </h4>
+                          <p className="text-sm text-[rgb(var(--color-text-muted))]">
+                            {tech.purpose}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
-                {/* Outcomes */}
-                <div className="bg-[rgb(var(--color-bg-subtle))] rounded-xl p-6 mt-8">
-                  <h3 className="mb-4">Outcomes</h3>
-                  <div className="space-y-4">
-                    {project.outcomes.map((outcome, index) => (
-                      <div key={index} className="text-center p-4 bg-[rgb(var(--color-bg-base))] rounded-lg">
-                        <div className="text-2xl font-bold gradient-text mb-1">
-                          {outcome.value}
+                {project.outcomes && project.outcomes.length > 0 && (
+                  <div className="bg-[rgb(var(--color-bg-subtle))] rounded-xl p-6 mt-8">
+                    <h3 className="mb-4">Outcomes</h3>
+                    <div className="space-y-4">
+                      {project.outcomes.map((outcome, index) => (
+                        <div key={index} className="text-center p-4 bg-[rgb(var(--color-bg-base))] rounded-lg">
+                          <div className="text-2xl font-bold gradient-text mb-1">
+                            {outcome.value}
+                          </div>
+                          <div className="text-sm text-[rgb(var(--color-text-muted))]">
+                            {outcome.label}
+                          </div>
                         </div>
-                        <div className="text-sm text-[rgb(var(--color-text-muted))]">
-                          {outcome.label}
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </motion.div>
             </div>
           </div>
@@ -414,7 +469,7 @@ export function ProjectDetail() {
       </div>
 
       <ShareButtons
-        url={`https://vaults.memarzade.dev/#/projects/${slug}`}
+        url={`https://vaults.memarzade.dev/projects/${slug}`}
         title={project.title}
         description={project.description}
       />

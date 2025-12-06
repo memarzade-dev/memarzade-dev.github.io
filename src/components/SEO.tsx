@@ -13,11 +13,12 @@ export function SEO({
   title = 'Memarzade.Dev - Full-Stack Developer | Laravel, React, AI & Blockchain',
   description = 'Professional Full-Stack Developer specializing in Laravel, React, Python, AI/ML, and Blockchain. Building exceptional digital experiences with modern web technologies.',
   image = 'https://vaults.memarzade.dev/og-image.png',
-  url = 'https://vaults.memarzade.dev',
+  url,
   type = 'website',
   keywords = ['Full-Stack Developer', 'Laravel', 'React', 'Python', 'AI', 'Blockchain', 'Web Development', 'TypeScript'],
 }: SEOProps) {
   useEffect(() => {
+    const computedUrl = typeof window !== 'undefined' ? window.location.href : (url || 'https://memarzade-dev.memarzade-dev.workers.dev');
     // Update page title
     document.title = title;
 
@@ -27,14 +28,14 @@ export function SEO({
 
     // Open Graph / Facebook
     updateMetaTag('property', 'og:type', type);
-    updateMetaTag('property', 'og:url', url);
+    updateMetaTag('property', 'og:url', computedUrl);
     updateMetaTag('property', 'og:title', title);
     updateMetaTag('property', 'og:description', description);
     updateMetaTag('property', 'og:image', image);
 
     // Twitter
     updateMetaTag('name', 'twitter:card', 'summary_large_image');
-    updateMetaTag('name', 'twitter:url', url);
+    updateMetaTag('name', 'twitter:url', computedUrl);
     updateMetaTag('name', 'twitter:title', title);
     updateMetaTag('name', 'twitter:description', description);
     updateMetaTag('name', 'twitter:image', image);
@@ -46,7 +47,7 @@ export function SEO({
     updateMetaTag('name', 'revisit-after', '7 days');
 
     // Canonical URL
-    updateLinkTag('canonical', url);
+    updateLinkTag('canonical', computedUrl);
   }, [title, description, image, url, type, keywords]);
 
   return null;

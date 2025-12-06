@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
 import { List } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useEffect, useState } from 'react';
 
 interface Heading {
   id: string;
@@ -18,18 +18,27 @@ export function TableOfContents({ content }: TableOfContentsProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Extract headings from markdown content
-    const headingRegex = /^(#{1,3})\s+(.+)$/gm;
+    const headingRegex = /^(#{1,6})\s+(.+)$/gm;
     const matches = Array.from(content.matchAll(headingRegex));
-    
-    const extractedHeadings = matches.map((match, index) => {
+    const used = new Map<string, number>();
+
+    const slug = (s: string) =>
+      s
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^\p{L}\p{N}\s-]/gu, '')
+        .trim()
+        .replace(/\s+/g, '-');
+
+    const extractedHeadings = matches.map((match) => {
       const level = match[1].length;
       const text = match[2].trim();
-      const id = text
-        .toLowerCase()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '-');
-      
+      let base = slug(text);
+      if (!base) base = 'section';
+      const count = used.get(base) ?? 0;
+      used.set(base, count + 1);
+      const id = count === 0 ? base : `${base}-${count + 1}`;
       return { id, text, level };
     });
 

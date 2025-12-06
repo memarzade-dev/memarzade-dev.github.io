@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, ReactNode } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
+import { useEffect, useRef, useState, ReactNode } from 'react';
 
 interface ParallaxSectionProps {
   children: ReactNode;

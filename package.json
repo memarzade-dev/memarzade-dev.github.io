@@ -69,7 +69,8 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-import": "^2.31.0",
     "prettier": "^3.3.3",
-    "eslint-config-prettier": "^9.1.0"
+    "eslint-config-prettier": "^9.1.0",
+    "wrangler": "^4.53.0"
   },
   "scripts": {
     "dev": "vite",
@@ -79,6 +80,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css,md}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,md}\"",
+    "deploy:cf": "npm run build && wrangler deploy"
   }
 }

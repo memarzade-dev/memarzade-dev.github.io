@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
+import { useEffect, useRef } from 'react';
 
 interface GraphNode {
   id: string;

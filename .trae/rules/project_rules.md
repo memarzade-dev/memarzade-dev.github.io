@@ -57,9 +57,12 @@ References:
 - Avoid inline scripts; prefer CSP-friendly patterns (`src/README.md:360-368`).
 
 ## Deployment Rules
-- Canonical deployment uses `gh-pages` to push `dist/` to `gh-pages`.
-- The `.github/workflows/jekyll-gh-pages.yml` exists but is not used for this Vite site.
-- Ensure `CNAME` is present in `public/` and copied to `dist/`.
+- GitHub Pages: `npm run deploy` pushes `dist/` to `gh-pages`.
+- Cloudflare Workers: static assets served with SPA fallback.
+  - Config: `wrangler.jsonc` with `assets.directory: ./dist` and `main: src/worker.ts`.
+  - Script: `npm run deploy:cf` builds and deploys via Wrangler.
+  - Worker URL is generated on deploy.
+  - Keep `CNAME` and assets in `dist/`.
 
 ## Verification Workflow
 - Before finishing changes:

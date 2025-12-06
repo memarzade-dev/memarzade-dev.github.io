@@ -1,13 +1,14 @@
 import { motion } from 'motion/react';
+
+import { ContactForm } from '../components/ContactForm';
+import { GraphView } from '../components/GraphView';
 import { Hero } from '../components/Hero';
-import { TagsCloud } from '../components/TagsCloud';
 import { PostCard } from '../components/PostCard';
 import { ProjectCard } from '../components/ProjectCard';
-import { GraphView } from '../components/GraphView';
 import { SkillsSection } from '../components/SkillsSection';
-import { Timeline } from '../components/Timeline';
+import { TagsCloud } from '../components/TagsCloud';
 import { Testimonials } from '../components/Testimonials';
-import { ContactForm } from '../components/ContactForm';
+import { Timeline } from '../components/Timeline';
 
 const titles = [
   'Full-Stack Developer',

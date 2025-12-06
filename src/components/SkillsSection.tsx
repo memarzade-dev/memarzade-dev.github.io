@@ -1,6 +1,6 @@
-import React from 'react';
-import { motion } from 'motion/react';
 import { Code, Database, Cloud, Smartphone, Brain, Shield, Boxes, Zap } from 'lucide-react';
+import { motion } from 'motion/react';
+import React from 'react';
 
 interface Skill {
   name: string;

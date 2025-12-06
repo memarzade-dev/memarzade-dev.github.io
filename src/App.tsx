@@ -1,24 +1,25 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
-import { Header } from './components/Header';
-import { Footer } from './components/Footer';
-import { ProgressBar } from './components/ProgressBar';
-import { ShareButtons } from './components/ShareButtons';
-import { ReadingModeToggle } from './components/ReadingModeToggle';
-import { LoadingSpinner } from './components/LoadingSpinner';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import { AnimatedCursor } from './components/AnimatedCursor';
+import { BackToTop } from './components/BackToTop';
 import { ErrorMessage } from './components/ErrorMessage';
+import { Footer } from './components/Footer';
+import { Header } from './components/Header';
+import { LoadingSpinner } from './components/LoadingSpinner';
+import { ProgressBar } from './components/ProgressBar';
+import { ReadingModeToggle } from './components/ReadingModeToggle';
 import { SearchModal } from './components/SearchModal';
 import { SEO } from './components/SEO';
-import { BackToTop } from './components/BackToTop';
-import { AnimatedCursor } from './components/AnimatedCursor';
+import { ShareButtons } from './components/ShareButtons';
 import { SmoothScroll } from './components/SmoothScroll';
-import { HomePage } from './pages/HomePage';
 import { BlogList } from './pages/BlogList';
 import { BlogPost } from './pages/BlogPost';
-import { ProjectsList } from './pages/ProjectsList';
-import { ProjectDetail } from './pages/ProjectDetail';
+import { HomePage } from './pages/HomePage';
 import { NotFound } from './pages/NotFound';
+import { ProjectDetail } from './pages/ProjectDetail';
+import { ProjectsList } from './pages/ProjectsList';
 
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -123,7 +124,7 @@ function App() {
           <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
           <ShareButtons
-            url="https://vaults.memarzade.dev"
+            url={typeof window !== 'undefined' ? window.location.href : 'https://memarzade-dev.memarzade-dev.workers.dev'}
             title="Memarzade.Dev - Full-Stack Developer"
             description="A passionate Full-Stack Developer specializing in modern web technologies"
           />
