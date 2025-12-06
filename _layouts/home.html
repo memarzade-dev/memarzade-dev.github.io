@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title | default: site.title }}</title>
+  <link rel="stylesheet" href="{{ '/assets/css/styles.css' | relative_url }}">
+  {% seo %}
+  {% feed_meta %}
+  <!-- Add favicon if you have one -->
+  <link rel="icon" href="{{ '/assets/images/favicon.ico' | relative_url }}" type="image/x-icon">
+  <!-- Google Fonts for professional typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-container">
+      <h1><a href="/">{{ site.title }}</a></h1>
+      <nav>
+        {% for page in site.header_pages %}
+          {% assign my_page = site.pages | where: "path", page | first %}
+          {% if my_page.title %}
+            <a href="{{ my_page.url | relative_url }}">{{ my_page.title | escape }}</a>
+          {% endif %}
+        {% endfor %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    {{ content }}
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; {{ site.time | date: "%Y" }} {{ site.title }}. All rights reserved. Powered by Jekyll & GitHub Pages.</p>
+    <div class="social-links">
+      {% if site.social.twitter %}<a href="https://twitter.com/{{ site.social.twitter }}">Twitter</a>{% endif %}
+      {% if site.social.github %}<a href="https://github.com/{{ site.social.github }}">GitHub</a>{% endif %}
+      {% if site.social.linkedin %}<a href="https://linkedin.com/in/{{ site.social.linkedin }}">LinkedIn</a>{% endif %}
+    </div>
+  </footer>
+
+  <!-- Analytics script if enabled -->
+  {% if site.analytics.google %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.analytics.google }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ site.analytics.google }}');
+    </script>
+  {% endif %}
+</body>
+</html>

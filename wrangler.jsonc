@@ -1,8 +1,0 @@
-{
-  "name": "memarzade-dev",
-  "compatibility_date": "2025-12-06",
-  "main": "src/worker.ts",
-  "assets": {
-    "directory": "./dist"
-  }
-}
